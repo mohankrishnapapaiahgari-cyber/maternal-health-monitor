@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Maternal Health Live Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root{
+            --bg1:#eef2ff;
+            --bg2:#f8fafc;
+            --bg3:#ecfeff;
+            --text:#0f172a;
+            --muted:#64748b;
+            --card:rgba(255,255,255,0.95);
+            --border:rgba(148,163,184,0.18);
+            --shadow:0 18px 50px rgba(15,23,42,.10);
+            --primary:#2563eb;
+            --primary2:#7c3aed;
+            --success:#16a34a;
+            --danger:#dc2626;
+            --neutral:#6366f1;
+        }
+
+        *{ box-sizing:border-box; }
+
+        body{
+            margin:0;
+            font-family:"Segoe UI", Arial, sans-serif;
+            color:var(--text);
+            background:
+                radial-gradient(circle at top left, rgba(37,99,235,.10), transparent 30%),
+                radial-gradient(circle at top right, rgba(124,58,237,.10), transparent 25%),
+                linear-gradient(135deg, var(--bg1), var(--bg2) 45%, var(--bg3));
+            min-height:100vh;
+        }
+
+        .page{
+            max-width:1400px;
+            margin:0 auto;
+            padding:28px 18px 42px;
+        }
+
+        .hero{
+            position:relative;
+            overflow:hidden;
+            border-radius:28px;
+            padding:30px 32px;
+            color:#fff;
+            background:linear-gradient(135deg, #0f172a 0%, #1d4ed8 52%, #7c3aed 100%);
+            box-shadow:0 24px 70px rgba(15,23,42,.18);
+            display:flex;
+            justify-content:space-between;
+            gap:24px;
+            align-items:flex-end;
+        }
+
+        .hero::before,
+        .hero::after{
+            content:"";
+            position:absolute;
+            border-radius:50%;
+            pointer-events:none;
+        }
+        .hero::before{
+            width:220px;
+            height:220px;
+            right:-50px;
+            top:-40px;
+            background:rgba(255,255,255,.10);
+        }
+        .hero::after{
+            width:140px;
+            height:140px;
+            right:140px;
+            bottom:-50px;
+            background:rgba(255,255,255,.08);
+        }
+
+        .hero h1{
+            margin:8px 0 10px;
+            font-size:clamp(2rem, 3vw, 3.1rem);
+            line-height:1.05;
+            letter-spacing:-0.03em;
+        }
+
+        .hero p{
+            margin:0;
+            max-width:780px;
+            color:rgba(255,255,255,.88);
+            font-size:1rem;
+            line-height:1.6;
+        }
+
+        .eyebrow{
+            display:inline-flex;
+            align-items:center;
+            gap:8px;
+            padding:8px 14px;
+            border-radius:999px;
+            background:rgba(255,255,255,.12);
+            border:1px solid rgba(255,255,255,.16);
+            font-size:.82rem;
+            font-weight:700;
+            letter-spacing:.08em;
+            text-transform:uppercase;
+        }
+
+        .hero-badges{
+            display:flex;
+            flex-wrap:wrap;
+            gap:10px;
+            margin-top:18px;
+        }
+        .hero-badges span{
+            padding:9px 14px;
+            border-radius:999px;
+            background:rgba(255,255,255,.12);
+            border:1px solid rgba(255,255,255,.16);
+            font-size:.9rem;
+            font-weight:600;
+        }
+
+        .hero-side{
+            min-width:260px;
+            background:rgba(255,255,255,.12);
+            border:1px solid rgba(255,255,255,.18);
+            border-radius:22px;
+            padding:18px 20px;
+            backdrop-filter:blur(10px);
+            box-shadow:inset 0 1px 0 rgba(255,255,255,.15);
+        }
+
+        .hero-side-label{
+            color:rgba(255,255,255,.72);
+            font-size:.85rem;
+            text-transform:uppercase;
+            letter-spacing:.08em;
+            font-weight:700;
+        }
+        .hero-side-value{
+            font-size:1.25rem;
+            font-weight:800;
+            margin-top:8px;
+            line-height:1.25;
+        }
+        .hero-side-sub{
+            margin-top:10px;
+            color:rgba(255,255,255,.82);
+            line-height:1.55;
+            font-size:.95rem;
+        }
+
+        .grid-top{
+            margin-top:22px;
+            display:grid;
+            grid-template-columns:1.05fr .95fr;
+            gap:24px;
+            align-items:start;
+        }
+
+        .card{
+            background:var(--card);
+            backdrop-filter:blur(10px);
+            border:1px solid var(--border);
+            border-radius:26px;
+            box-shadow:var(--shadow);
+            padding:24px;
+        }
+
+        .card h2{
+            margin:0 0 6px;
+            font-size:1.35rem;
+            letter-spacing:-0.02em;
+        }
+
+        .subtext{
+            margin:0 0 18px;
+            color:var(--muted);
+            line-height:1.55;
+            font-size:.95rem;
+        }
+
+        .form-grid{
+            display:grid;
+            grid-template-columns:1fr 1fr;
+            gap:14px;
+        }
+
+        .field,
+        .metric{
+            background:linear-gradient(180deg, #fff, #f8fafc);
+            border:1px solid #e2e8f0;
+            border-radius:18px;
+            padding:14px;
+        }
+
+        .field label{
+            display:block;
+            margin-bottom:8px;
+            font-weight:800;
+            color:#334155;
+            font-size:.9rem;
+        }
+
+        .field input{
+            width:100%;
+            border:none;
+            outline:none;
+            background:transparent;
+            font-size:1rem;
+            color:#0f172a;
+            font-weight:700;
+        }
+
+        .button-row{
+            display:flex;
+            gap:12px;
+            flex-wrap:wrap;
+            margin-top:18px;
+        }
+
+        .btn{
+            border:none;
+            border-radius:16px;
+            padding:14px 18px;
+            font-weight:800;
+            font-size:1rem;
+            cursor:pointer;
+            transition:transform .15s ease, box-shadow .15s ease;
+        }
+        .btn:hover{ transform:translateY(-1px); }
+
+        .btn-primary{
+            color:#fff;
+            background:linear-gradient(135deg, var(--primary), var(--primary2));
+            box-shadow:0 14px 30px rgba(37,99,235,.24);
+            min-width:180px;
+        }
+
+        .btn-secondary{
+            background:#e2e8f0;
+            color:#0f172a;
+        }
+
+        .tiny-note{
+            margin-top:10px;
+            color:#94a3b8;
+            font-size:.82rem;
+            line-height:1.5;
+        }
+
+        .sensor-grid{
+            display:grid;
+            grid-template-columns:1fr 1fr;
+            gap:12px;
+        }
+
+        .sensor-box{
+            background:linear-gradient(180deg, #fff, #f8fafc);
+            border:1px solid #e2e8f0;
+            border-radius:18px;
+            padding:14px;
+        }
+        .sensor-box.full{ grid-column:1/-1; }
+
+        .sensor-box .label{
+            color:var(--muted);
+            font-size:.8rem;
+            text-transform:uppercase;
+            letter-spacing:.08em;
+            font-weight:800;
+        }
+        .sensor-box .value{
+            margin-top:8px;
+            font-size:1.35rem;
+            font-weight:900;
+            color:#0f172a;
+        }
+
+        .status-pill{
+            display:inline-flex;
+            align-items:center;
+            gap:8px;
+            padding:8px 14px;
+            border-radius:999px;
+            font-weight:900;
+            margin-bottom:12px;
+        }
+        .pill-high{ background:#fee2e2; color:#991b1b; }
+        .pill-low{ background:#dcfce7; color:#166534; }
+        .pill-neutral{ background:#e0e7ff; color:#3730a3; }
+
+        .prediction-title{
+            font-size:1.8rem;
+            font-weight:900;
+            line-height:1.1;
+            margin:0;
+            letter-spacing:-0.03em;
+        }
+
+        .prediction-note{
+            margin-top:10px;
+            color:#475569;
+            line-height:1.6;
+            font-size:.98rem;
+        }
+
+        .metric-grid{
+            display:grid;
+            grid-template-columns:repeat(2, 1fr);
+            gap:12px;
+            margin-top:14px;
+        }
+
+        .metric .label{
+            color:var(--muted);
+            font-size:.8rem;
+            text-transform:uppercase;
+            letter-spacing:.08em;
+            font-weight:800;
+        }
+
+        .metric .value{
+            margin-top:8px;
+            font-size:1.25rem;
+            font-weight:900;
+            color:#0f172a;
+        }
+
+        .metric .hint{
+            margin-top:4px;
+            color:#64748b;
+            font-size:.88rem;
+            line-height:1.45;
+        }
+
+        .charts{
+            margin-top:24px;
+            display:grid;
+            grid-template-columns:1.25fr .75fr;
+            gap:24px;
+        }
+
+        .chart-card{
+            min-height:420px;
+        }
+
+        .chart-box{
+            position:relative;
+            height:310px;
+            width:100%;
+        }
+
+        .footer-note{
+            margin-top:16px;
+            color:#64748b;
+            font-size:.88rem;
+            line-height:1.6;
+        }
+
+        .error-box{
+            margin-top:18px;
+            padding:14px 16px;
+            border-radius:16px;
+            background:#fef2f2;
+            color:#b91c1c;
+            border:1px solid #fecaca;
+            font-weight:700;
+        }
+
+        .connection-line{
+            display:flex;
+            flex-wrap:wrap;
+            gap:10px;
+            margin-top:12px;
+        }
+
+        .small-chip{
+            display:inline-flex;
+            align-items:center;
+            padding:7px 12px;
+            border-radius:999px;
+            background:rgba(255,255,255,.10);
+            border:1px solid rgba(255,255,255,.14);
+            color:#fff;
+            font-size:.84rem;
+            font-weight:700;
+        }
+
+        @media (max-width:1100px){
+            .grid-top,
+            .charts{
+                grid-template-columns:1fr;
+            }
+        }
+
+        @media (max-width:760px){
+            .hero{
+                flex-direction:column;
+                align-items:flex-start;
+                padding:24px;
+            }
+            .hero-side{
+                width:100%;
+            }
+            .form-grid,
+            .sensor-grid,
+            .metric-grid{
+                grid-template-columns:1fr;
+            }
+            .card{
+                padding:20px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="page">
+    <section class="hero">
+        <div class="hero-copy">
+            <span class="eyebrow">Maternal Health Live Dashboard</span>
+            <h1>Maternal Health Monitoring System</h1>
+            <p>
+                Live temperature, BPM, and stress are coming from Arduino.
+                Age, blood pressure, and weight are entered manually for prediction.
+            </p>
+            <div class="hero-badges">
+                <span>USB serial stream</span>
+                <span>Live BPM</span>
+                <span>Live temperature</span>
+                <span>Live stress</span>
+            </div>
+        </div>
+
+        <div class="hero-side">
+            <div class="hero-side-label">Connection</div>
+            <div id="statusText" class="hero-side-value">{{ sensor.status }}</div>
+            <div id="timeText" class="hero-side-sub">
+                Last update: {{ sensor.timestamp if sensor.timestamp else "—" }}
+            </div>
+            <div class="connection-line">
+                <span class="small-chip" id="connectedChip">
+                    {{ "Connected" if sensor.connected else "Waiting" }}
+                </span>
+                <span class="small-chip">USB</span>
+            </div>
+        </div>
+    </section>
+
+    {% if sensor.error %}
+        <div class="error-box" id="errorBox">{{ sensor.error }}</div>
+    {% else %}
+        <div class="error-box" id="errorBox" style="display:none;"></div>
+    {% endif %}
+
+    <section class="grid-top">
+        <div class="card">
+            <h2>Manual Inputs</h2>
+            <p class="subtext">
+                Fill these values manually. Temperature, BPM, and stress are read live from Arduino.
+            </p>
+
+            <form action="/predict" method="POST" autocomplete="off">
+                <div class="form-grid">
+                    <div class="field">
+                        <label for="age">Age</label>
+                        <input id="age" type="number" step="any" name="age" value="{{ age }}" placeholder="e.g. 23" required>
+                    </div>
+
+                    <div class="field">
+                        <label for="sys_bp">Systolic BP</label>
+                        <input id="sys_bp" type="number" step="any" name="sys_bp" value="{{ sys_bp }}" placeholder="e.g. 135" required>
+                    </div>
+
+                    <div class="field">
+                        <label for="dia_bp">Diastolic BP</label>
+                        <input id="dia_bp" type="number" step="any" name="dia_bp" value="{{ dia_bp }}" placeholder="e.g. 85" required>
+                    </div>
+
+                    <div class="field">
+                        <label for="weight">Weight (kg)</label>
+                        <input id="weight" type="number" step="any" name="weight" value="{{ weight }}" placeholder="e.g. 56" required>
+                    </div>
+                </div>
+
+                <div class="button-row">
+                    <button type="submit" class="btn btn-primary">Predict</button>
+                    <button type="reset" class="btn btn-secondary">Clear</button>
+                </div>
+
+                <div class="tiny-note">
+                    Temp, BPM, and stress are live values from the Arduino sensors.
+                </div>
+            </form>
+        </div>
+
+        <aside class="card">
+            <h2>Live Sensor Panel</h2>
+            <p class="subtext">
+                Values are refreshed automatically every 2 seconds.
+            </p>
+
+            <div class="sensor-grid">
+                <div class="sensor-box">
+                    <div class="label">Temperature</div>
+                    <div class="value" id="tempValue">
+                        {{ sensor.temp if sensor.temp is not none else "—" }}
+                    </div>
+                </div>
+
+                <div class="sensor-box">
+                    <div class="label">BPM</div>
+                    <div class="value" id="bpmValue">
+                        {{ sensor.bpm if sensor.bpm is not none else "—" }}
+                    </div>
+                </div>
+
+                <div class="sensor-box full">
+                    <div class="label">Stress</div>
+                    <div class="value" id="stressValue">
+                        {% if sensor.stress is none %}
+                            —
+                        {% elif sensor.stress == 1 %}
+                            HIGH (1)
+                        {% else %}
+                            LOW (0)
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div style="height:14px;"></div>
+
+            <div class="metric-grid">
+                <div class="metric">
+                    <div class="label">Mode</div>
+                    <div class="value">Live</div>
+                    <div class="hint">USB serial streaming</div>
+                </div>
+                <div class="metric">
+                    <div class="label">Prediction</div>
+                    <div class="value" id="statusPrediction">{{ prediction if prediction else sensor.prediction }}</div>
+                    <div class="hint">Model output</div>
+                </div>
+                <div class="metric">
+                    <div class="label">Last Update</div>
+                    <div class="value" id="lastUpdate">{{ sensor.timestamp if sensor.timestamp else "—" }}</div>
+                    <div class="hint">Latest sample time</div>
+                </div>
+                <div class="metric">
+                    <div class="label">Serial Line</div>
+                    <div class="value">Arduino</div>
+                    <div class="hint">Temp,BPM,Stress</div>
+                </div>
+            </div>
+        </aside>
+    </section>
+
+    <section class="charts">
+        <div class="card chart-card">
+            <h2>Input Snapshot</h2>
+            <p class="subtext">Live sensor readings as a bar chart.</p>
+            <div class="chart-box">
+                <canvas id="vitalsChart"></canvas>
+            </div>
+        </div>
+
+        <div class="card chart-card">
+            <h2>Prediction</h2>
+            <p class="subtext">Latest classification from the ML model.</p>
+
+            <div id="predPill" class="status-pill
+                {% if sensor.prediction_class == 'high' %}pill-high
+                {% elif sensor.prediction_class == 'low' %}pill-low
+                {% else %}pill-neutral{% endif %}">
+                <span id="predictionText">Prediction: {{ prediction if prediction else sensor.prediction }}</span>
+            </div>
+
+            <p id="predictionTitle" class="prediction-title">
+                {{ prediction if prediction else sensor.prediction }}
+            </p>
+
+            <div id="predictionNote" class="prediction-note">
+                {% if sensor.prediction_class == "high" %}
+                    High risk detected. Please review the readings carefully.
+                {% elif sensor.prediction_class == "low" %}
+                    Low risk detected. The readings appear stable.
+                {% else %}
+                    Waiting for a prediction.
+                {% endif %}
+            </div>
+        </div>
+    </section>
+
+    <p class="footer-note">
+        Keep only this Flask app running while reading from Arduino. Do not open Arduino Serial Monitor at the same time.
+    </p>
+</div>
+
+<script>
+    const labels = ["Temperature", "BPM", "Stress"];
+    const liveState = {{ sensor | tojson }};
+
+    const barColors = ['#06b6d4', '#6366f1', '#ef4444'];
+
+    const vitalsCtx = document.getElementById('vitalsChart').getContext('2d');
+    const vitalsChart = new Chart(vitalsCtx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Live Reading',
+                data: [
+                    liveState.temp ?? 0,
+                    liveState.bpm ?? 0,
+                    liveState.stress ?? 0
+                ],
+                backgroundColor: barColors,
+                borderRadius: 12,
+                maxBarThickness: 60
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                x: {
+                    grid: { display: false },
+                    ticks: { color: '#475569', font: { weight: '600' } }
+                },
+                y: {
+                    beginAtZero: true,
+                    grid: { color: 'rgba(148, 163, 184, 0.18)' },
+                    ticks: { color: '#64748b' }
+                }
+            }
+        }
+    });
+
+    function updatePredictionUI(prediction, predictionClass) {
+        const pill = document.getElementById('predPill');
+        pill.classList.remove('pill-high', 'pill-low', 'pill-neutral');
+
+        if (predictionClass === 'high') {
+            pill.classList.add('pill-high');
+            document.getElementById('predictionNote').innerText =
+                'High risk detected. Please review the readings carefully.';
+        } else if (predictionClass === 'low') {
+            pill.classList.add('pill-low');
+            document.getElementById('predictionNote').innerText =
+                'Low risk detected. The readings appear stable.';
+        } else {
+            pill.classList.add('pill-neutral');
+            document.getElementById('predictionNote').innerText =
+                'Waiting for a prediction.';
+        }
+
+        document.getElementById('predictionText').innerText = `Prediction: ${prediction}`;
+        document.getElementById('predictionTitle').innerText = prediction;
+        document.getElementById('statusPrediction').innerText = prediction;
+    }
+
+    async function refreshLive() {
+        try {
+            const res = await fetch('/live', { cache: 'no-store' });
+            const data = await res.json();
+
+            document.getElementById('statusText').innerText = data.status || '—';
+            document.getElementById('lastUpdate').innerText = data.timestamp || '—';
+            document.getElementById('connectedChip').innerText = data.connected ? 'Connected' : 'Waiting';
+
+            const errorBox = document.getElementById('errorBox');
+            if (data.error) {
+                errorBox.style.display = 'block';
+                errorBox.innerText = data.error;
+            } else {
+                errorBox.style.display = 'none';
+            }
+
+            document.getElementById('tempValue').innerText =
+                (data.temp !== null && data.temp !== undefined) ? data.temp : '—';
+
+            document.getElementById('bpmValue').innerText =
+                (data.bpm !== null && data.bpm !== undefined) ? data.bpm : '—';
+
+            if (data.stress === 1) {
+                document.getElementById('stressValue').innerText = 'HIGH (1)';
+            } else if (data.stress === 0) {
+                document.getElementById('stressValue').innerText = 'LOW (0)';
+            } else {
+                document.getElementById('stressValue').innerText = '—';
+            }
+
+            document.getElementById('timeText').innerText =
+                'Last update: ' + (data.timestamp || '—');
+
+            document.getElementById('lastLine').innerText =
+                data.line || 'Waiting for data...';
+
+            vitalsChart.data.datasets[0].data = [
+                data.temp ?? 0,
+                data.bpm ?? 0,
+                data.stress ?? 0
+            ];
+            vitalsChart.update();
+
+            updatePredictionUI(data.prediction || '—', data.prediction_class || 'neutral');
+
+        } catch (err) {
+            document.getElementById('statusText').innerText = 'Dashboard update failed';
+            document.getElementById('errorBox').style.display = 'block';
+            document.getElementById('errorBox').innerText = String(err);
+        }
+    }
+
+    refreshLive();
+    setInterval(refreshLive, 2000);
+</script>
+</body>
+</html>
