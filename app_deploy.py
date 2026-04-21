@@ -54,8 +54,17 @@ def classify_prediction(label: str) -> str:
     return "neutral"
 
 
-def predict_from_inputs(age, bpm, temp, sys_bp, dia_bp, stress, weight):
-    values = np.array([[age, bpm, temp, sys_bp, dia_bp, stress, weight]], dtype=float)
+def compute_bmi(weight_kg: float, height_cm: float) -> float:
+    height_m = height_cm / 100.0
+    if height_m <= 0:
+        raise ValueError("Height must be greater than 0")
+    return weight_kg / (height_m * height_m)
+
+
+def predict_from_inputs(age, sys_bp, dia_bp, bpm, temp, bmi, stress):
+    # Training order:
+    # Age, Systolic BP, Diastolic, Heart Rate, Body Temp, BMI, Mental Health
+    values = np.array([[age, sys_bp, dia_bp, bpm, temp, bmi, stress]], dtype=float)
     scaled = scaler.transform(values)
     pred = model.predict(scaled)[0]
 
@@ -64,7 +73,6 @@ def predict_from_inputs(age, bpm, temp, sys_bp, dia_bp, stress, weight):
     return str(pred)
 
 
-# 🔴 NEW API (IMPORTANT)
 @app.route("/update", methods=["GET"])
 def update():
     global state
@@ -97,9 +105,10 @@ def home():
         sensor=sensor,
         prediction=sensor["prediction"],
         age="",
+        weight="",
+        height="",
         sys_bp="",
-        dia_bp="",
-        weight=""
+        dia_bp=""
     )
 
 
@@ -107,9 +116,12 @@ def home():
 def predict():
     try:
         age = float(request.form["age"])
+        weight = float(request.form["weight"])
+        height = float(request.form["height"])
         sys_bp = float(request.form["sys_bp"])
         dia_bp = float(request.form["dia_bp"])
-        weight = float(request.form["weight"])
+
+        bmi = compute_bmi(weight, height)
 
         with lock:
             temp = state["temp"]
@@ -123,12 +135,13 @@ def predict():
                 sensor=sensor,
                 prediction="Waiting for sensor data...",
                 age=request.form.get("age", ""),
+                weight=request.form.get("weight", ""),
+                height=request.form.get("height", ""),
                 sys_bp=request.form.get("sys_bp", ""),
-                dia_bp=request.form.get("dia_bp", ""),
-                weight=request.form.get("weight", "")
+                dia_bp=request.form.get("dia_bp", "")
             )
 
-        result = predict_from_inputs(age, bpm, temp, sys_bp, dia_bp, stress, weight)
+        result = predict_from_inputs(age, sys_bp, dia_bp, bpm, temp, bmi, stress)
         pred_class = classify_prediction(result)
 
         with lock:
@@ -141,9 +154,10 @@ def predict():
             sensor=sensor,
             prediction=result,
             age=age,
+            weight=weight,
+            height=height,
             sys_bp=sys_bp,
-            dia_bp=dia_bp,
-            weight=weight
+            dia_bp=dia_bp
         )
 
     except Exception as e:
@@ -155,9 +169,10 @@ def predict():
             sensor=sensor,
             prediction=f"Error: {e}",
             age=request.form.get("age", ""),
+            weight=request.form.get("weight", ""),
+            height=request.form.get("height", ""),
             sys_bp=request.form.get("sys_bp", ""),
-            dia_bp=request.form.get("dia_bp", ""),
-            weight=request.form.get("weight", "")
+            dia_bp=request.form.get("dia_bp", "")
         )
 
 

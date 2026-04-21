@@ -33,7 +33,6 @@
       overflow-x: hidden;
     }
 
-    /* ─── NOISE TEXTURE OVERLAY ─── */
     body::before {
       content: '';
       position: fixed;
@@ -44,7 +43,6 @@
       opacity: 0.35;
     }
 
-    /* ─── GRID BACKGROUND ─── */
     body::after {
       content: '';
       position: fixed;
@@ -59,7 +57,6 @@
 
     .page-wrapper { position: relative; z-index: 1; }
 
-    /* ─── HEADER ─── */
     .header {
       position: relative;
       overflow: hidden;
@@ -76,6 +73,7 @@
       background: radial-gradient(circle, rgba(56,217,245,0.10) 0%, transparent 65%);
       pointer-events: none;
     }
+
     .header::after {
       content: '';
       position: absolute;
@@ -144,7 +142,6 @@
       font-weight: 600;
     }
 
-    /* ─── LIVE INDICATOR ─── */
     .live-pill {
       display: flex;
       align-items: center;
@@ -174,14 +171,12 @@
       50%       { opacity: 0.4; transform: scale(0.7); }
     }
 
-    /* ─── MAIN ─── */
     .main {
       max-width: 1280px;
       margin: 0 auto;
       padding: 2rem 1.5rem 3rem;
     }
 
-    /* ─── STATUS BAR ─── */
     .status-bar {
       display: flex;
       align-items: center;
@@ -211,7 +206,6 @@
       letter-spacing: 0.05em;
     }
 
-    /* ─── SECTION LABEL ─── */
     .section-label {
       font-family: 'JetBrains Mono', monospace;
       font-size: 0.65rem;
@@ -232,7 +226,6 @@
       background: linear-gradient(90deg, rgba(56,217,245,0.18), transparent);
     }
 
-    /* ─── GLASSMORPHISM CARDS ─── */
     .glass-card {
       background: var(--glass-bg);
       backdrop-filter: blur(16px);
@@ -250,7 +243,6 @@
       border-color: rgba(56,217,245,0.22);
     }
 
-    /* card top glow bar */
     .glass-card::before {
       content: '';
       position: absolute;
@@ -264,7 +256,6 @@
     .card-stress::before { background: linear-gradient(90deg, transparent, var(--amber), transparent); }
     .card-pred::before  { background: linear-gradient(90deg, transparent, var(--indigo), transparent); }
 
-    /* ─── METRIC CARDS GRID ─── */
     .metrics-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -315,7 +306,6 @@
 
     .val-temp  { color: var(--cyan);  }
     .val-bpm   { color: var(--rose);  }
-    .val-stress { /* dynamic */ }
     .val-pred  { color: var(--indigo); }
 
     .metric-unit {
@@ -344,7 +334,6 @@
     .badge-alert  { background: rgba(255,78,122,0.12);  color: var(--rose);  border: 1px solid rgba(255,78,122,0.25); }
     .badge-neutral { background: rgba(124,141,255,0.12); color: var(--indigo); border: 1px solid rgba(124,141,255,0.25); }
 
-    /* ─── CHARTS GRID ─── */
     .charts-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -376,7 +365,6 @@
 
     .chart-container { position: relative; height: 180px; }
 
-    /* ─── ERROR OVERLAY ─── */
     .error-overlay {
       position: fixed;
       inset: 0;
@@ -421,7 +409,6 @@
       letter-spacing: 0.08em;
     }
 
-    /* ─── ANIMATIONS ─── */
     @keyframes fadeUp {
       from { opacity: 0; transform: translateY(18px); }
       to   { opacity: 1; transform: translateY(0); }
@@ -436,7 +423,6 @@
     .delay-6 { animation-delay: 0.48s; }
     .delay-7 { animation-delay: 0.56s; }
 
-    /* value update flash */
     @keyframes flashUpdate {
       0%   { opacity: 0.4; }
       100% { opacity: 1; }
@@ -444,7 +430,6 @@
 
     .updated { animation: flashUpdate 0.35s ease; }
 
-    /* ─── HEARTBEAT ICON ─── */
     .pulse-icon {
       display: inline-block;
       animation: heartbeat 1.2s ease-in-out infinite;
@@ -458,7 +443,6 @@
       56%       { transform: scale(1); }
     }
 
-    /* ─── FOOTER ─── */
     .footer {
       text-align: center;
       padding: 1.5rem;
@@ -469,13 +453,11 @@
       border-top: 1px solid rgba(56,217,245,0.07);
     }
 
-    /* ─── SCROLLBAR ─── */
     ::-webkit-scrollbar { width: 6px; }
     ::-webkit-scrollbar-track { background: var(--bg-deep); }
     ::-webkit-scrollbar-thumb { background: rgba(56,217,245,0.2); border-radius: 3px; }
     ::-webkit-scrollbar-thumb:hover { background: rgba(56,217,245,0.4); }
 
-    /* ─── RESPONSIVE ─── */
     @media (max-width: 640px) {
       .metrics-grid { grid-template-columns: 1fr 1fr; }
       .metric-value { font-size: 2.4rem; }
@@ -488,7 +470,6 @@
 <body>
 <div class="page-wrapper">
 
-  <!-- ─── ERROR / LOADING OVERLAY ─── -->
   <div class="error-overlay" id="errorOverlay">
     <div class="error-icon">🌐</div>
     <div class="error-title">Waiting for Device...</div>
@@ -500,13 +481,11 @@
     </div>
   </div>
 
-  <!-- ─── HEADER ─── -->
   <header class="header">
     <div class="header-inner">
       <div class="logo-badge">
         <div class="logo-icon">
           <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <!-- Heart with pulse -->
             <path d="M14 22s-8-5.5-8-11A5 5 0 0114 8a5 5 0 0110 0c-1 5.5-10 14-10 14z" fill="none" stroke="url(#hg)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             <polyline points="5,14 8,14 10,10 12,18 14,13 16,15 18,15 22,15" stroke="#38d9f5" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
             <defs>
@@ -530,10 +509,8 @@
     </div>
   </header>
 
-  <!-- ─── MAIN CONTENT ─── -->
   <main class="main">
 
-    <!-- STATUS BAR -->
     <div class="status-bar fade-up">
       <div class="status-text">
         Endpoint: <span class="highlight">https://maternal-health-monitor.onrender.com/live</span>
@@ -542,11 +519,68 @@
       <div class="timestamp" id="timestamp">—</div>
     </div>
 
-    <!-- ─── METRIC CARDS ─── -->
+    <div class="section-label fade-up delay-1">Manual Prediction Inputs</div>
+    <div class="glass-card metric-card fade-up delay-2" style="margin-bottom: 2.2rem; padding: 1.6rem 1.5rem 1.4rem;">
+      <form id="predictionForm" method="POST" action="/predict" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+
+        <div>
+          <label class="block mb-2 text-sm font-medium text-slate-300">Age</label>
+          <input type="number" name="age" id="ageInput" required
+                 value="{{ age|default('') }}"
+                 class="w-full rounded-xl bg-slate-900/80 border border-cyan-400/20 px-4 py-3 text-white outline-none focus:border-cyan-400"
+                 placeholder="e.g. 24">
+        </div>
+
+        <div>
+          <label class="block mb-2 text-sm font-medium text-slate-300">Weight (kg)</label>
+          <input type="number" step="0.1" name="weight" id="weightInput" required
+                 value="{{ weight|default('') }}"
+                 class="w-full rounded-xl bg-slate-900/80 border border-cyan-400/20 px-4 py-3 text-white outline-none focus:border-cyan-400"
+                 placeholder="e.g. 62">
+        </div>
+
+        <div>
+          <label class="block mb-2 text-sm font-medium text-slate-300">Height (cm)</label>
+          <input type="number" step="0.1" name="height" id="heightInput" required
+                 value="{{ height|default('') }}"
+                 class="w-full rounded-xl bg-slate-900/80 border border-cyan-400/20 px-4 py-3 text-white outline-none focus:border-cyan-400"
+                 placeholder="e.g. 165">
+        </div>
+
+        <div>
+          <label class="block mb-2 text-sm font-medium text-slate-300">Systolic BP</label>
+          <input type="number" name="sys_bp" id="sysBpInput" required
+                 value="{{ sys_bp|default('') }}"
+                 class="w-full rounded-xl bg-slate-900/80 border border-cyan-400/20 px-4 py-3 text-white outline-none focus:border-cyan-400"
+                 placeholder="e.g. 120">
+        </div>
+
+        <div>
+          <label class="block mb-2 text-sm font-medium text-slate-300">Diastolic BP</label>
+          <input type="number" name="dia_bp" id="diaBpInput" required
+                 value="{{ dia_bp|default('') }}"
+                 class="w-full rounded-xl bg-slate-900/80 border border-cyan-400/20 px-4 py-3 text-white outline-none focus:border-cyan-400"
+                 placeholder="e.g. 80">
+        </div>
+
+        <input type="hidden" name="bmi" id="bmiInput">
+
+        <div class="md:col-span-2 lg:col-span-5 flex flex-col md:flex-row md:items-center md:justify-between gap-4 mt-2">
+          <div class="text-sm text-slate-400">
+            Computed BMI: <span id="bmiPreview" class="text-cyan-300 font-semibold">—</span>
+          </div>
+
+          <button type="submit"
+                  class="px-6 py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-500 text-white font-semibold shadow-lg hover:opacity-90 transition">
+            Predict Risk
+          </button>
+        </div>
+      </form>
+    </div>
+
     <div class="section-label fade-up delay-1">Vital Signs</div>
     <div class="metrics-grid">
 
-      <!-- Temperature -->
       <div class="glass-card card-temp metric-card fade-up delay-2">
         <div class="metric-header">
           <span class="metric-label">Temperature</span>
@@ -560,7 +594,6 @@
         <div class="metric-badge badge-normal" id="tempBadge">● Measuring...</div>
       </div>
 
-      <!-- Heart Rate -->
       <div class="glass-card card-bpm metric-card fade-up delay-3">
         <div class="metric-header">
           <span class="metric-label">Heart Rate</span>
@@ -576,7 +609,6 @@
         <div class="metric-badge badge-normal" id="bpmBadge">● Measuring...</div>
       </div>
 
-      <!-- Stress Level -->
       <div class="glass-card card-stress metric-card fade-up delay-4">
         <div class="metric-header">
           <span class="metric-label">Stress Level</span>
@@ -590,7 +622,6 @@
         <div class="metric-badge badge-warn" id="stressBadge">● Measuring...</div>
       </div>
 
-      <!-- Prediction -->
       <div class="glass-card card-pred metric-card fade-up delay-5">
         <div class="metric-header">
           <span class="metric-label">AI Prediction</span>
@@ -600,17 +631,15 @@
             </svg>
           </span>
         </div>
-        <div class="metric-value val-pred" id="predVal" style="font-size:1.8rem;text-transform:capitalize;">—</div>
+        <div class="metric-value val-pred" id="predVal" style="font-size:1.8rem;text-transform:capitalize;">{{ prediction|default('—') }}</div>
         <div class="metric-badge badge-neutral" id="predBadge">● Processing...</div>
       </div>
 
     </div>
 
-    <!-- ─── CHARTS ─── -->
     <div class="section-label fade-up delay-5">Real-Time Trends</div>
     <div class="charts-grid">
 
-      <!-- Temperature Chart -->
       <div class="glass-card chart-card fade-up delay-5">
         <div class="chart-title" style="color:var(--cyan);">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/></svg>
@@ -622,7 +651,6 @@
         </div>
       </div>
 
-      <!-- BPM Chart -->
       <div class="glass-card chart-card fade-up delay-6">
         <div class="chart-title" style="color:var(--rose);">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
@@ -634,7 +662,6 @@
         </div>
       </div>
 
-      <!-- Stress Bar Chart -->
       <div class="glass-card chart-card fade-up delay-7">
         <div class="chart-title" style="color:var(--amber);">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 15s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
@@ -653,15 +680,13 @@
     Maternal Health Monitoring System &nbsp;·&nbsp; IIT BHU Varanasi &nbsp;·&nbsp; © 2025 Mohan Krishna &nbsp;·&nbsp; All data is for clinical observation only
   </footer>
 
-</div><!-- end page-wrapper -->
+</div>
 
 <script>
-  // ─── CONFIG ───────────────────────────────────────────────
   const API_URL   = 'https://maternal-health-monitor.onrender.com/live';
   const MAX_PTS   = 20;
   const INTERVAL  = 2000;
 
-  // ─── DATA BUFFERS ─────────────────────────────────────────
   let tempData   = [];
   let bpmData    = [];
   let stressData = [];
@@ -669,20 +694,24 @@
   let tick       = 0;
   let firstLoad  = true;
 
-  // ─── DOM REFS ─────────────────────────────────────────────
-  const overlay    = document.getElementById('errorOverlay');
-  const errorMsg   = document.getElementById('errorMsg');
-  const timestamp  = document.getElementById('timestamp');
-  const tempVal    = document.getElementById('tempVal');
-  const bpmVal     = document.getElementById('bpmVal');
-  const stressVal  = document.getElementById('stressVal');
-  const predVal    = document.getElementById('predVal');
-  const tempBadge  = document.getElementById('tempBadge');
-  const bpmBadge   = document.getElementById('bpmBadge');
-  const stressBadge= document.getElementById('stressBadge');
-  const predBadge  = document.getElementById('predBadge');
+  const overlay     = document.getElementById('errorOverlay');
+  const errorMsg    = document.getElementById('errorMsg');
+  const timestamp   = document.getElementById('timestamp');
+  const tempVal     = document.getElementById('tempVal');
+  const bpmVal      = document.getElementById('bpmVal');
+  const stressVal   = document.getElementById('stressVal');
+  const predVal     = document.getElementById('predVal');
+  const tempBadge   = document.getElementById('tempBadge');
+  const bpmBadge    = document.getElementById('bpmBadge');
+  const stressBadge = document.getElementById('stressBadge');
+  const predBadge   = document.getElementById('predBadge');
 
-  // ─── CHART DEFAULTS ───────────────────────────────────────
+  const form        = document.getElementById('predictionForm');
+  const weightInput  = document.getElementById('weightInput');
+  const heightInput  = document.getElementById('heightInput');
+  const bmiInput     = document.getElementById('bmiInput');
+  const bmiPreview   = document.getElementById('bmiPreview');
+
   Chart.defaults.color = '#5e7ea8';
   Chart.defaults.font.family = "'JetBrains Mono', monospace";
   Chart.defaults.font.size   = 10;
@@ -715,7 +744,6 @@
     }
   });
 
-  // ─── TEMPERATURE CHART ────────────────────────────────────
   const tempCtx   = document.getElementById('tempChart').getContext('2d');
   const tempGrad  = tempCtx.createLinearGradient(0, 0, 0, 180);
   tempGrad.addColorStop(0, 'rgba(56,217,245,0.28)');
@@ -746,7 +774,6 @@
     }
   });
 
-  // ─── BPM CHART ────────────────────────────────────────────
   const bpmCtx   = document.getElementById('bpmChart').getContext('2d');
   const bpmGrad  = bpmCtx.createLinearGradient(0, 0, 0, 180);
   bpmGrad.addColorStop(0, 'rgba(255,78,122,0.28)');
@@ -777,7 +804,6 @@
     }
   });
 
-  // ─── STRESS CHART ─────────────────────────────────────────
   const stressCtx = document.getElementById('stressChart').getContext('2d');
   const stressChart = new Chart(stressCtx, {
     type: 'bar',
@@ -806,7 +832,6 @@
     }
   });
 
-  // ─── HELPERS ──────────────────────────────────────────────
   function pushData(arr, val) {
     arr.push(val);
     if (arr.length > MAX_PTS) arr.shift();
@@ -815,7 +840,7 @@
 
   function flashEl(el) {
     el.classList.remove('updated');
-    void el.offsetWidth; // reflow
+    void el.offsetWidth;
     el.classList.add('updated');
   }
 
@@ -837,80 +862,107 @@
 
   function predStatus(p) {
     const lower = (p || '').toLowerCase();
-    if (lower === 'high risk')   return 'badge-alert';
-    if (lower === 'low risk')    return 'badge-normal';
-    if (lower === 'moderate')    return 'badge-warn';
+    if (lower.includes('high')) return 'badge-alert';
+    if (lower.includes('low')) return 'badge-normal';
+    if (lower.includes('moderate')) return 'badge-warn';
     return 'badge-neutral';
   }
 
-  // ─── UPDATE UI ────────────────────────────────────────────
+  function isFiniteNumber(v) {
+    return Number.isFinite(Number(v));
+  }
+
+  function setMetricText(el, value, unit, fallback = '—') {
+    if (isFiniteNumber(value)) {
+      el.innerHTML = `${Number(value).toFixed(unit === '°C' ? 1 : 0)}<span class="metric-unit">${unit}</span>`;
+      return true;
+    } else {
+      el.innerHTML = `${fallback}<span class="metric-unit">${unit}</span>`;
+      return false;
+    }
+  }
+
   function updateUI(data) {
-    const t  = parseFloat(data.temp).toFixed(1);
-    const b  = parseInt(data.bpm);
-    const s  = parseInt(data.stress);
-    const p  = data.prediction_class || 'Unknown';
+    const tempNum = Number(data.temp);
+    const bpmNum = Number(data.bpm);
+    const stressNum = Number(data.stress);
+    const predText = data.prediction || data.prediction_class || 'Unknown';
     const ts = now();
 
-    // timestamp
     timestamp.textContent = 'Last updated: ' + ts;
 
-    // labels
     tick++;
     const lbl = tick.toString();
     pushData(labels, lbl);
 
-    // temperature
-    tempVal.innerHTML = `${t}<span class="metric-unit">°C</span>`;
-    flashEl(tempVal);
-    const [tClass, tTxt] = tempStatus(parseFloat(t));
-    tempBadge.className = 'metric-badge ' + tClass;
-    tempBadge.textContent = '● ' + tTxt;
-    pushData(tempData, parseFloat(t));
-    tempChart.data.labels = [...labels];
-    tempChart.data.datasets[0].data = [...tempData];
-    tempChart.update();
+    const hasTemp = Number.isFinite(tempNum);
+    const hasBpm = Number.isFinite(bpmNum);
+    const hasStress = Number.isFinite(stressNum);
 
-    // bpm
-    bpmVal.innerHTML = `${b}<span class="metric-unit">BPM</span>`;
-    flashEl(bpmVal);
-    const [bClass, bTxt] = bpmStatus(b);
-    bpmBadge.className = 'metric-badge ' + bClass;
-    bpmBadge.textContent = '● ' + bTxt;
-    pushData(bpmData, b);
-    bpmChart.data.labels = [...labels];
-    bpmChart.data.datasets[0].data = [...bpmData];
-    bpmChart.update();
+    if (hasTemp) {
+      tempVal.innerHTML = `${tempNum.toFixed(1)}<span class="metric-unit">°C</span>`;
+      flashEl(tempVal);
+      const [tClass, tTxt] = tempStatus(tempNum);
+      tempBadge.className = 'metric-badge ' + tClass;
+      tempBadge.textContent = '● ' + tTxt;
+      pushData(tempData, tempNum);
+      tempChart.data.labels = [...labels];
+      tempChart.data.datasets[0].data = [...tempData];
+      tempChart.update();
+    } else {
+      tempVal.innerHTML = `—<span class="metric-unit">°C</span>`;
+      tempBadge.className = 'metric-badge badge-neutral';
+      tempBadge.textContent = '● Waiting...';
+    }
 
-    // stress
-    const stressStr = s === 1 ? 'HIGH' : 'LOW';
-    const stressColor = s === 1 ? 'var(--rose)' : 'var(--teal)';
-    stressVal.textContent = stressStr;
-    stressVal.style.color = stressColor;
-    flashEl(stressVal);
-    stressBadge.className = 'metric-badge ' + (s === 1 ? 'badge-alert' : 'badge-normal');
-    stressBadge.textContent = s === 1 ? '▲ Elevated Stress' : '✔ Calm';
-    pushData(stressData, s);
-    stressChart.data.labels = [...labels];
-    stressChart.data.datasets[0].data = [...stressData];
-    stressChart.update();
+    if (hasBpm) {
+      bpmVal.innerHTML = `${bpmNum.toFixed(0)}<span class="metric-unit">BPM</span>`;
+      flashEl(bpmVal);
+      const [bClass, bTxt] = bpmStatus(bpmNum);
+      bpmBadge.className = 'metric-badge ' + bClass;
+      bpmBadge.textContent = '● ' + bTxt;
+      pushData(bpmData, bpmNum);
+      bpmChart.data.labels = [...labels];
+      bpmChart.data.datasets[0].data = [...bpmData];
+      bpmChart.update();
+    } else {
+      bpmVal.innerHTML = `—<span class="metric-unit">BPM</span>`;
+      bpmBadge.className = 'metric-badge badge-neutral';
+      bpmBadge.textContent = '● Waiting...';
+    }
 
-    // prediction
-    predVal.textContent = p.charAt(0).toUpperCase() + p.slice(1);
+    if (hasStress) {
+      const stressStr = stressNum === 1 ? 'HIGH' : 'LOW';
+      const stressColor = stressNum === 1 ? 'var(--rose)' : 'var(--teal)';
+      stressVal.textContent = stressStr;
+      stressVal.style.color = stressColor;
+      flashEl(stressVal);
+      stressBadge.className = 'metric-badge ' + (stressNum === 1 ? 'badge-alert' : 'badge-normal');
+      stressBadge.textContent = stressNum === 1 ? '▲ Elevated Stress' : '✔ Calm';
+      pushData(stressData, stressNum);
+      stressChart.data.labels = [...labels];
+      stressChart.data.datasets[0].data = [...stressData];
+      stressChart.update();
+    } else {
+      stressVal.textContent = '—';
+      stressBadge.className = 'metric-badge badge-neutral';
+      stressBadge.textContent = '● Waiting...';
+    }
+
+    predVal.textContent = predText;
     flashEl(predVal);
-    predBadge.className = 'metric-badge ' + predStatus(p);
+    predBadge.className = 'metric-badge ' + predStatus(predText);
     predBadge.textContent = '● AI Assessment';
 
-    // hide overlay on first success
-    if (firstLoad) {
+    if (firstLoad && (hasTemp || hasBpm || hasStress)) {
       firstLoad = false;
       overlay.classList.add('hidden');
     }
   }
 
-  // ─── FETCH ────────────────────────────────────────────────
   async function fetchData() {
     try {
-      const res  = await fetch(API_URL, { cache: 'no-store' });
+      const res = await fetch(API_URL, { cache: 'no-store' });
       if (!res.ok) throw new Error('HTTP ' + res.status);
       const data = await res.json();
       updateUI(data);
@@ -923,7 +975,30 @@
     }
   }
 
-  // ─── INIT ─────────────────────────────────────────────────
+  function calculateBMI() {
+    const weight = parseFloat(weightInput.value);
+    const heightCm = parseFloat(heightInput.value);
+
+    if (!weight || !heightCm || heightCm <= 0) {
+      bmiInput.value = '';
+      bmiPreview.textContent = '—';
+      return;
+    }
+
+    const heightM = heightCm / 100;
+    const bmi = weight / (heightM * heightM);
+    bmiInput.value = bmi.toFixed(2);
+    bmiPreview.textContent = bmi.toFixed(2);
+  }
+
+  weightInput.addEventListener('input', calculateBMI);
+  heightInput.addEventListener('input', calculateBMI);
+
+  form.addEventListener('submit', function () {
+    calculateBMI();
+  });
+
+  calculateBMI();
   fetchData();
   setInterval(fetchData, INTERVAL);
 </script>
