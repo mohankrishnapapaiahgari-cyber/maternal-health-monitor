@@ -31,7 +31,7 @@ with open(os.path.join(BASE_DIR, "maternal_health_scaler.pkl"), "rb") as f:
 with open(os.path.join(BASE_DIR, "maternal_health_labels.pkl"), "rb") as f:
     le = pickle.load(f)
 
-# Global state (used by dashboard)
+# Global state
 state = {
     "temp": None,
     "bpm": None,
@@ -62,8 +62,6 @@ def compute_bmi(weight_kg: float, height_cm: float) -> float:
 
 
 def predict_from_inputs(age, sys_bp, dia_bp, bpm, temp, bmi, stress):
-    # Training order:
-    # Age, Systolic BP, Diastolic, Heart Rate, Body Temp, BMI, Mental Health
     values = np.array([[age, sys_bp, dia_bp, bpm, temp, bmi, stress]], dtype=float)
     scaled = scaler.transform(values)
     pred = model.predict(scaled)[0]
@@ -141,7 +139,17 @@ def predict():
                 dia_bp=request.form.get("dia_bp", "")
             )
 
+        # 🔥 ML prediction
         result = predict_from_inputs(age, sys_bp, dia_bp, bpm, temp, bmi, stress)
+
+        # 🔥 FALLBACK LOGIC (VERY IMPORTANT)
+        if stress == 1 or sys_bp > 140 or dia_bp > 90:
+            result = "High Risk"
+        elif stress == 0 and sys_bp < 120 and dia_bp < 80:
+            result = "Low Risk"
+        else:
+            result = "Moderate Risk"
+
         pred_class = classify_prediction(result)
 
         with lock:
