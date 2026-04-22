@@ -6,22 +6,10 @@ import warnings
 import time
 import threading
 
-try:
-    from sklearn.exceptions import InconsistentVersionWarning
-    warnings.filterwarnings("ignore", category=InconsistentVersionWarning)
-except Exception:
-    pass
-
-warnings.filterwarnings(
-    "ignore",
-    message="X does not have valid feature names, but StandardScaler was fitted with feature names"
-)
-
 app = Flask(__name__)
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-# Load ML model files
 with open(os.path.join(BASE_DIR, "maternal_health_model.pkl"), "rb") as f:
     model = pickle.load(f)
 
@@ -31,11 +19,12 @@ with open(os.path.join(BASE_DIR, "maternal_health_scaler.pkl"), "rb") as f:
 with open(os.path.join(BASE_DIR, "maternal_health_labels.pkl"), "rb") as f:
     le = pickle.load(f)
 
-# Global state
 state = {
     "temp": None,
     "bpm": None,
     "stress": None,
+    "spo2": None,
+    "kicks": None,
     "timestamp": "",
     "status": "Waiting for data...",
     "prediction": "—",
@@ -43,7 +32,6 @@ state = {
 }
 
 lock = threading.Lock()
-
 
 def classify_prediction(label: str) -> str:
     label = str(label).lower()
@@ -53,62 +41,34 @@ def classify_prediction(label: str) -> str:
         return "low"
     return "neutral"
 
-
-def compute_bmi(weight_kg: float, height_cm: float) -> float:
-    height_m = height_cm / 100.0
-    if height_m <= 0:
-        raise ValueError("Height must be greater than 0")
-    return weight_kg / (height_m * height_m)
-
+def compute_bmi(weight, height):
+    return weight / ((height/100)**2)
 
 def predict_from_inputs(age, sys_bp, dia_bp, bpm, temp, bmi, stress):
-    values = np.array([[age, sys_bp, dia_bp, bpm, temp, bmi, stress]], dtype=float)
+    values = np.array([[age, sys_bp, dia_bp, bpm, temp, bmi, stress]])
     scaled = scaler.transform(values)
     pred = model.predict(scaled)[0]
+    return le.inverse_transform([pred])[0]
 
-    if isinstance(pred, (int, np.integer)):
-        return le.inverse_transform([int(pred)])[0]
-    return str(pred)
-
-
-@app.route("/update", methods=["GET"])
+@app.route("/update")
 def update():
-    global state
-
     try:
-        temp = float(request.args.get("temp"))
-        bpm = float(request.args.get("bpm"))
-        stress = int(float(request.args.get("stress")))
-
         with lock:
-            state["temp"] = temp
-            state["bpm"] = bpm
-            state["stress"] = stress
+            state["temp"] = float(request.args.get("temp"))
+            state["bpm"] = float(request.args.get("bpm"))
+            state["stress"] = int(float(request.args.get("stress")))
+            state["spo2"] = float(request.args.get("spo2"))
+            state["kicks"] = int(request.args.get("kicks"))
             state["timestamp"] = time.strftime("%H:%M:%S")
-            state["status"] = "Live data received from device"
+            state["status"] = "Live data received"
 
         return "OK"
-
     except Exception as e:
-        return f"Error: {e}"
-
+        return str(e)
 
 @app.route("/")
 def home():
-    with lock:
-        sensor = state.copy()
-
-    return render_template(
-        "index.html",
-        sensor=sensor,
-        prediction=sensor["prediction"],
-        age="",
-        weight="",
-        height="",
-        sys_bp="",
-        dia_bp=""
-    )
-
+    return render_template("index.html", sensor=state)
 
 @app.route("/predict", methods=["POST"])
 def predict():
@@ -121,28 +81,13 @@ def predict():
 
         bmi = compute_bmi(weight, height)
 
-        with lock:
-            temp = state["temp"]
-            bpm = state["bpm"]
-            stress = state["stress"]
-            sensor = state.copy()
+        temp = state["temp"]
+        bpm = state["bpm"]
+        stress = state["stress"]
 
-        if temp is None or bpm is None or stress is None:
-            return render_template(
-                "index.html",
-                sensor=sensor,
-                prediction="Waiting for sensor data...",
-                age=request.form.get("age", ""),
-                weight=request.form.get("weight", ""),
-                height=request.form.get("height", ""),
-                sys_bp=request.form.get("sys_bp", ""),
-                dia_bp=request.form.get("dia_bp", "")
-            )
-
-        # 🔥 ML prediction
         result = predict_from_inputs(age, sys_bp, dia_bp, bpm, temp, bmi, stress)
 
-        # 🔥 FALLBACK LOGIC (VERY IMPORTANT)
+        # 🔥 fallback logic
         if stress == 1 or sys_bp > 140 or dia_bp > 90:
             result = "High Risk"
         elif stress == 0 and sys_bp < 120 and dia_bp < 80:
@@ -150,45 +95,17 @@ def predict():
         else:
             result = "Moderate Risk"
 
-        pred_class = classify_prediction(result)
+        state["prediction"] = result
+        state["prediction_class"] = classify_prediction(result)
 
-        with lock:
-            state["prediction"] = result
-            state["prediction_class"] = pred_class
-            sensor = state.copy()
-
-        return render_template(
-            "index.html",
-            sensor=sensor,
-            prediction=result,
-            age=age,
-            weight=weight,
-            height=height,
-            sys_bp=sys_bp,
-            dia_bp=dia_bp
-        )
+        return render_template("index.html", sensor=state)
 
     except Exception as e:
-        with lock:
-            sensor = state.copy()
-
-        return render_template(
-            "index.html",
-            sensor=sensor,
-            prediction=f"Error: {e}",
-            age=request.form.get("age", ""),
-            weight=request.form.get("weight", ""),
-            height=request.form.get("height", ""),
-            sys_bp=request.form.get("sys_bp", ""),
-            dia_bp=request.form.get("dia_bp", "")
-        )
-
+        return str(e)
 
 @app.route("/live")
 def live():
-    with lock:
-        return jsonify(state)
-
+    return jsonify(state)
 
 if __name__ == "__main__":
     app.run(debug=True)

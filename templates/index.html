@@ -1,1006 +1,161 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Maternal Health Monitoring System — IIT BHU</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=JetBrains+Mono:wght@300;400;500&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Maternal Health Monitoring System</title>
 
-  <style>
-    :root {
-      --bg-deep:       #050d1a;
-      --bg-panel:      #090f1f;
-      --glass-bg:      rgba(12, 22, 45, 0.72);
-      --glass-border:  rgba(80, 180, 255, 0.13);
-      --cyan:          #38d9f5;
-      --teal:          #0ff2c2;
-      --indigo:        #7c8dff;
-      --rose:          #ff4e7a;
-      --amber:         #ffa94d;
-      --text-primary:  #e8f4ff;
-      --text-muted:    #5e7ea8;
-    }
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      font-family: 'Outfit', sans-serif;
-      background-color: var(--bg-deep);
-      color: var(--text-primary);
-      min-height: 100vh;
-      overflow-x: hidden;
-    }
-
-    body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
-      pointer-events: none;
-      z-index: 0;
-      opacity: 0.35;
-    }
-
-    body::after {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background-image:
-        linear-gradient(rgba(56,217,245,0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(56,217,245,0.03) 1px, transparent 1px);
-      background-size: 44px 44px;
-      pointer-events: none;
-      z-index: 0;
-    }
-
-    .page-wrapper { position: relative; z-index: 1; }
-
-    .header {
-      position: relative;
-      overflow: hidden;
-      background: linear-gradient(135deg, #0a1628 0%, #0d1f3c 40%, #0c1630 70%, #0a0f22 100%);
-      border-bottom: 1px solid rgba(56,217,245,0.12);
-      padding: 2.5rem 2rem 2.2rem;
-    }
-
-    .header::before {
-      content: '';
-      position: absolute;
-      top: -120px; left: -120px;
-      width: 500px; height: 500px;
-      background: radial-gradient(circle, rgba(56,217,245,0.10) 0%, transparent 65%);
-      pointer-events: none;
-    }
-
-    .header::after {
-      content: '';
-      position: absolute;
-      bottom: -80px; right: -60px;
-      width: 380px; height: 380px;
-      background: radial-gradient(circle, rgba(124,141,255,0.12) 0%, transparent 65%);
-      pointer-events: none;
-    }
-
-    .header-inner {
-      max-width: 1280px;
-      margin: 0 auto;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 1.5rem;
-      flex-wrap: wrap;
-    }
-
-    .logo-badge {
-      display: flex;
-      align-items: center;
-      gap: 0.9rem;
-    }
-
-    .logo-icon {
-      width: 54px; height: 54px;
-      border-radius: 14px;
-      background: linear-gradient(135deg, rgba(56,217,245,0.18), rgba(124,141,255,0.18));
-      border: 1px solid rgba(56,217,245,0.28);
-      display: flex; align-items: center; justify-content: center;
-      box-shadow: 0 0 28px rgba(56,217,245,0.15);
-      flex-shrink: 0;
-    }
-
-    .header-title {
-      font-family: 'Rajdhani', sans-serif;
-      font-size: clamp(1.3rem, 3vw, 2rem);
-      font-weight: 700;
-      letter-spacing: 0.04em;
-      background: linear-gradient(90deg, #ffffff 0%, var(--cyan) 55%, var(--indigo) 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      line-height: 1.1;
-    }
-
-    .header-sub {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.68rem;
-      font-weight: 400;
-      color: var(--text-muted);
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      margin-top: 0.25rem;
-    }
-
-    .header-dev {
-      font-size: 0.78rem;
-      color: rgba(255,255,255,0.35);
-      margin-top: 0.1rem;
-    }
-
-    .header-dev span {
-      color: var(--cyan);
-      font-weight: 600;
-    }
-
-    .live-pill {
-      display: flex;
-      align-items: center;
-      gap: 0.45rem;
-      background: rgba(255,78,122,0.10);
-      border: 1px solid rgba(255,78,122,0.28);
-      border-radius: 999px;
-      padding: 0.35rem 0.85rem;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.72rem;
-      font-weight: 500;
-      color: var(--rose);
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      white-space: nowrap;
-    }
-
-    .live-dot {
-      width: 7px; height: 7px;
-      border-radius: 50%;
-      background: var(--rose);
-      animation: livepulse 1.4s ease-in-out infinite;
-    }
-
-    @keyframes livepulse {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50%       { opacity: 0.4; transform: scale(0.7); }
-    }
-
-    .main {
-      max-width: 1280px;
-      margin: 0 auto;
-      padding: 2rem 1.5rem 3rem;
-    }
-
-    .status-bar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 1rem;
-      flex-wrap: wrap;
-      margin-bottom: 1.8rem;
-      padding: 0.8rem 1.2rem;
-      background: rgba(56,217,245,0.04);
-      border: 1px solid rgba(56,217,245,0.10);
-      border-radius: 12px;
-    }
-
-    .status-text {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.72rem;
-      color: var(--text-muted);
-      letter-spacing: 0.05em;
-    }
-
-    .status-text .highlight { color: var(--cyan); font-weight: 500; }
-
-    .timestamp {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.72rem;
-      color: var(--text-muted);
-      letter-spacing: 0.05em;
-    }
-
-    .section-label {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.65rem;
-      font-weight: 500;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      color: var(--text-muted);
-      margin-bottom: 1rem;
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-    }
-
-    .section-label::after {
-      content: '';
-      flex: 1;
-      height: 1px;
-      background: linear-gradient(90deg, rgba(56,217,245,0.18), transparent);
-    }
-
-    .glass-card {
-      background: var(--glass-bg);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border: 1px solid var(--glass-border);
-      border-radius: 20px;
-      transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.3s ease;
-      overflow: hidden;
-      position: relative;
-    }
-
-    .glass-card:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 16px 48px rgba(0,0,0,0.5), 0 0 0 1px rgba(56,217,245,0.12);
-      border-color: rgba(56,217,245,0.22);
-    }
-
-    .glass-card::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 2px;
-      border-radius: 20px 20px 0 0;
-    }
-
-    .card-temp::before  { background: linear-gradient(90deg, transparent, var(--cyan), transparent); }
-    .card-bpm::before   { background: linear-gradient(90deg, transparent, var(--rose), transparent); }
-    .card-stress::before { background: linear-gradient(90deg, transparent, var(--amber), transparent); }
-    .card-pred::before  { background: linear-gradient(90deg, transparent, var(--indigo), transparent); }
-
-    .metrics-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 1.2rem;
-      margin-bottom: 2.2rem;
-    }
-
-    .metric-card {
-      padding: 1.6rem 1.5rem 1.4rem;
-    }
-
-    .metric-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 1.1rem;
-    }
-
-    .metric-label {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.65rem;
-      font-weight: 500;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: var(--text-muted);
-    }
-
-    .metric-icon {
-      width: 34px; height: 34px;
-      border-radius: 9px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1rem;
-    }
-
-    .icon-temp  { background: rgba(56,217,245,0.12);  color: var(--cyan);  }
-    .icon-bpm   { background: rgba(255,78,122,0.12);  color: var(--rose);  }
-    .icon-stress { background: rgba(255,169,77,0.12); color: var(--amber); }
-    .icon-pred  { background: rgba(124,141,255,0.12); color: var(--indigo); }
-
-    .metric-value {
-      font-family: 'Rajdhani', sans-serif;
-      font-size: 3.2rem;
-      font-weight: 700;
-      line-height: 1;
-      letter-spacing: -0.01em;
-      margin-bottom: 0.3rem;
-    }
-
-    .val-temp  { color: var(--cyan);  }
-    .val-bpm   { color: var(--rose);  }
-    .val-pred  { color: var(--indigo); }
-
-    .metric-unit {
-      font-size: 1rem;
-      font-weight: 400;
-      opacity: 0.6;
-      margin-left: 0.2rem;
-    }
-
-    .metric-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.35rem;
-      padding: 0.22rem 0.7rem;
-      border-radius: 999px;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.62rem;
-      font-weight: 600;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      margin-top: 0.5rem;
-    }
-
-    .badge-normal { background: rgba(15,242,194,0.12); color: var(--teal); border: 1px solid rgba(15,242,194,0.25); }
-    .badge-warn   { background: rgba(255,169,77,0.12);  color: var(--amber); border: 1px solid rgba(255,169,77,0.25); }
-    .badge-alert  { background: rgba(255,78,122,0.12);  color: var(--rose);  border: 1px solid rgba(255,78,122,0.25); }
-    .badge-neutral { background: rgba(124,141,255,0.12); color: var(--indigo); border: 1px solid rgba(124,141,255,0.25); }
-
-    .charts-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 1.2rem;
-    }
-
-    .chart-card {
-      padding: 1.4rem 1.5rem 1.2rem;
-    }
-
-    .chart-title {
-      font-family: 'Rajdhani', sans-serif;
-      font-size: 1rem;
-      font-weight: 600;
-      letter-spacing: 0.06em;
-      margin-bottom: 0.3rem;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .chart-subtitle {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.62rem;
-      color: var(--text-muted);
-      letter-spacing: 0.08em;
-      margin-bottom: 1rem;
-    }
-
-    .chart-container { position: relative; height: 180px; }
-
-    .error-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(5,13,26,0.85);
-      backdrop-filter: blur(8px);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      z-index: 999;
-      gap: 1rem;
-      transition: opacity 0.4s ease;
-    }
-
-    .error-overlay.hidden {
-      opacity: 0;
-      pointer-events: none;
-    }
-
-    .error-icon {
-      font-size: 3rem;
-      animation: float 3s ease-in-out infinite;
-    }
-
-    @keyframes float {
-      0%, 100% { transform: translateY(0); }
-      50%       { transform: translateY(-10px); }
-    }
-
-    .error-title {
-      font-family: 'Rajdhani', sans-serif;
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: var(--text-primary);
-      letter-spacing: 0.05em;
-    }
-
-    .error-sub {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.72rem;
-      color: var(--text-muted);
-      letter-spacing: 0.08em;
-    }
-
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(18px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-
-    .fade-up { animation: fadeUp 0.6s ease both; }
-    .delay-1 { animation-delay: 0.08s; }
-    .delay-2 { animation-delay: 0.16s; }
-    .delay-3 { animation-delay: 0.24s; }
-    .delay-4 { animation-delay: 0.32s; }
-    .delay-5 { animation-delay: 0.40s; }
-    .delay-6 { animation-delay: 0.48s; }
-    .delay-7 { animation-delay: 0.56s; }
-
-    @keyframes flashUpdate {
-      0%   { opacity: 0.4; }
-      100% { opacity: 1; }
-    }
-
-    .updated { animation: flashUpdate 0.35s ease; }
-
-    .pulse-icon {
-      display: inline-block;
-      animation: heartbeat 1.2s ease-in-out infinite;
-    }
-
-    @keyframes heartbeat {
-      0%, 100% { transform: scale(1); }
-      14%       { transform: scale(1.25); }
-      28%       { transform: scale(1); }
-      42%       { transform: scale(1.18); }
-      56%       { transform: scale(1); }
-    }
-
-    .footer {
-      text-align: center;
-      padding: 1.5rem;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.65rem;
-      color: var(--text-muted);
-      letter-spacing: 0.1em;
-      border-top: 1px solid rgba(56,217,245,0.07);
-    }
-
-    ::-webkit-scrollbar { width: 6px; }
-    ::-webkit-scrollbar-track { background: var(--bg-deep); }
-    ::-webkit-scrollbar-thumb { background: rgba(56,217,245,0.2); border-radius: 3px; }
-    ::-webkit-scrollbar-thumb:hover { background: rgba(56,217,245,0.4); }
-
-    @media (max-width: 640px) {
-      .metrics-grid { grid-template-columns: 1fr 1fr; }
-      .metric-value { font-size: 2.4rem; }
-      .header { padding: 1.5rem 1rem; }
-      .main { padding: 1.2rem 1rem 2rem; }
-    }
-  </style>
+<style>
+body {
+  background: #050d1a;
+  color: white;
+  font-family: Arial;
+}
+.card {
+  background: rgba(255,255,255,0.05);
+  padding: 20px;
+  border-radius: 15px;
+  margin: 10px;
+}
+</style>
 </head>
 
 <body>
-<div class="page-wrapper">
 
-  <div class="error-overlay" id="errorOverlay">
-    <div class="error-icon">🌐</div>
-    <div class="error-title">Waiting for Device...</div>
-    <div class="error-sub" id="errorMsg">Connecting to sensor node</div>
-    <div style="margin-top:0.5rem; display:flex; gap:0.4rem;">
-      <span style="width:8px;height:8px;border-radius:50%;background:var(--cyan);animation:livepulse 1s 0s infinite ease-in-out;display:inline-block;"></span>
-      <span style="width:8px;height:8px;border-radius:50%;background:var(--cyan);animation:livepulse 1s 0.2s infinite ease-in-out;display:inline-block;"></span>
-      <span style="width:8px;height:8px;border-radius:50%;background:var(--cyan);animation:livepulse 1s 0.4s infinite ease-in-out;display:inline-block;"></span>
-    </div>
-  </div>
+<h1 style="text-align:center;">Maternal Health Monitoring System</h1>
+<p style="text-align:center;">IIT BHU - Varanasi | Developed by Mohan Krishna</p>
 
-  <header class="header">
-    <div class="header-inner">
-      <div class="logo-badge">
-        <div class="logo-icon">
-          <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M14 22s-8-5.5-8-11A5 5 0 0114 8a5 5 0 0110 0c-1 5.5-10 14-10 14z" fill="none" stroke="url(#hg)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            <polyline points="5,14 8,14 10,10 12,18 14,13 16,15 18,15 22,15" stroke="#38d9f5" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-            <defs>
-              <linearGradient id="hg" x1="6" y1="6" x2="22" y2="22">
-                <stop offset="0%" stop-color="#38d9f5"/>
-                <stop offset="100%" stop-color="#7c8dff"/>
-              </linearGradient>
-            </defs>
-          </svg>
-        </div>
-        <div>
-          <div class="header-title">Maternal Health Monitoring System</div>
-          <div class="header-sub">Indian Institute of Technology BHU · Varanasi</div>
-          <div class="header-dev">Developed by <span>Mohan Krishna</span></div>
-        </div>
-      </div>
-      <div class="live-pill">
-        <span class="live-dot"></span>
-        Live Monitor
-      </div>
-    </div>
-  </header>
+<!-- INPUT FORM -->
+<div class="card">
+<form method="POST" action="/predict">
 
-  <main class="main">
+<input name="age" placeholder="Age" required>
+<input name="weight" id="weight" placeholder="Weight" required>
+<input name="height" id="height" placeholder="Height" required>
+<input name="sys_bp" placeholder="Systolic BP" required>
+<input name="dia_bp" placeholder="Diastolic BP" required>
 
-    <div class="status-bar fade-up">
-      <div class="status-text">
-        Endpoint: <span class="highlight">https://maternal-health-monitor.onrender.com/live</span>
-        &nbsp;·&nbsp; Refresh: <span class="highlight">2s</span>
-      </div>
-      <div class="timestamp" id="timestamp">—</div>
-    </div>
+<input type="hidden" name="bmi" id="bmi">
 
-    <div class="section-label fade-up delay-1">Manual Prediction Inputs</div>
-    <div class="glass-card metric-card fade-up delay-2" style="margin-bottom: 2.2rem; padding: 1.6rem 1.5rem 1.4rem;">
-      <form id="predictionForm" method="POST" action="/predict" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+<p>BMI: <span id="bmiVal">--</span></p>
 
-        <div>
-          <label class="block mb-2 text-sm font-medium text-slate-300">Age</label>
-          <input type="number" name="age" id="ageInput" required
-                 value="{{ age|default('') }}"
-                 class="w-full rounded-xl bg-slate-900/80 border border-cyan-400/20 px-4 py-3 text-white outline-none focus:border-cyan-400"
-                 placeholder="e.g. 24">
-        </div>
+<button type="submit">Predict</button>
 
-        <div>
-          <label class="block mb-2 text-sm font-medium text-slate-300">Weight (kg)</label>
-          <input type="number" step="0.1" name="weight" id="weightInput" required
-                 value="{{ weight|default('') }}"
-                 class="w-full rounded-xl bg-slate-900/80 border border-cyan-400/20 px-4 py-3 text-white outline-none focus:border-cyan-400"
-                 placeholder="e.g. 62">
-        </div>
+</form>
+</div>
 
-        <div>
-          <label class="block mb-2 text-sm font-medium text-slate-300">Height (cm)</label>
-          <input type="number" step="0.1" name="height" id="heightInput" required
-                 value="{{ height|default('') }}"
-                 class="w-full rounded-xl bg-slate-900/80 border border-cyan-400/20 px-4 py-3 text-white outline-none focus:border-cyan-400"
-                 placeholder="e.g. 165">
-        </div>
+<!-- LIVE DATA -->
+<div class="card">
+<h2>Live Data</h2>
 
-        <div>
-          <label class="block mb-2 text-sm font-medium text-slate-300">Systolic BP</label>
-          <input type="number" name="sys_bp" id="sysBpInput" required
-                 value="{{ sys_bp|default('') }}"
-                 class="w-full rounded-xl bg-slate-900/80 border border-cyan-400/20 px-4 py-3 text-white outline-none focus:border-cyan-400"
-                 placeholder="e.g. 120">
-        </div>
+<p>Temperature: <span id="temp">--</span></p>
+<p>BPM: <span id="bpm">--</span></p>
+<p>Stress: <span id="stress">--</span></p>
+<p>SpO2: <span id="spo2">--</span></p>
+<p>Fetal Kicks: <span id="kicks">--</span></p>
 
-        <div>
-          <label class="block mb-2 text-sm font-medium text-slate-300">Diastolic BP</label>
-          <input type="number" name="dia_bp" id="diaBpInput" required
-                 value="{{ dia_bp|default('') }}"
-                 class="w-full rounded-xl bg-slate-900/80 border border-cyan-400/20 px-4 py-3 text-white outline-none focus:border-cyan-400"
-                 placeholder="e.g. 80">
-        </div>
-
-        <input type="hidden" name="bmi" id="bmiInput">
-
-        <div class="md:col-span-2 lg:col-span-5 flex flex-col md:flex-row md:items-center md:justify-between gap-4 mt-2">
-          <div class="text-sm text-slate-400">
-            Computed BMI: <span id="bmiPreview" class="text-cyan-300 font-semibold">—</span>
-          </div>
-
-          <button type="submit"
-                  class="px-6 py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-500 text-white font-semibold shadow-lg hover:opacity-90 transition">
-            Predict Risk
-          </button>
-        </div>
-      </form>
-    </div>
-
-    <div class="section-label fade-up delay-1">Vital Signs</div>
-    <div class="metrics-grid">
-
-      <div class="glass-card card-temp metric-card fade-up delay-2">
-        <div class="metric-header">
-          <span class="metric-label">Temperature</span>
-          <span class="metric-icon icon-temp">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/>
-            </svg>
-          </span>
-        </div>
-        <div class="metric-value val-temp" id="tempVal">—<span class="metric-unit">°C</span></div>
-        <div class="metric-badge badge-normal" id="tempBadge">● Measuring...</div>
-      </div>
-
-      <div class="glass-card card-bpm metric-card fade-up delay-3">
-        <div class="metric-header">
-          <span class="metric-label">Heart Rate</span>
-          <span class="metric-icon icon-bpm">
-            <span class="pulse-icon">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-              </svg>
-            </span>
-          </span>
-        </div>
-        <div class="metric-value val-bpm" id="bpmVal">—<span class="metric-unit">BPM</span></div>
-        <div class="metric-badge badge-normal" id="bpmBadge">● Measuring...</div>
-      </div>
-
-      <div class="glass-card card-stress metric-card fade-up delay-4">
-        <div class="metric-header">
-          <span class="metric-label">Stress Level</span>
-          <span class="metric-icon icon-stress">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="10"/><path d="M8 15s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/>
-            </svg>
-          </span>
-        </div>
-        <div class="metric-value" id="stressVal" style="color:var(--amber);">—</div>
-        <div class="metric-badge badge-warn" id="stressBadge">● Measuring...</div>
-      </div>
-
-      <div class="glass-card card-pred metric-card fade-up delay-5">
-        <div class="metric-header">
-          <span class="metric-label">AI Prediction</span>
-          <span class="metric-icon icon-pred">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
-            </svg>
-          </span>
-        </div>
-        <div class="metric-value val-pred" id="predVal" style="font-size:1.8rem;text-transform:capitalize;">{{ prediction|default('—') }}</div>
-        <div class="metric-badge badge-neutral" id="predBadge">● Processing...</div>
-      </div>
-
-    </div>
-
-    <div class="section-label fade-up delay-5">Real-Time Trends</div>
-    <div class="charts-grid">
-
-      <div class="glass-card chart-card fade-up delay-5">
-        <div class="chart-title" style="color:var(--cyan);">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/></svg>
-          Temperature Trend
-        </div>
-        <div class="chart-subtitle">LAST 20 READINGS · °CELSIUS</div>
-        <div class="chart-container">
-          <canvas id="tempChart"></canvas>
-        </div>
-      </div>
-
-      <div class="glass-card chart-card fade-up delay-6">
-        <div class="chart-title" style="color:var(--rose);">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-          Heart Rate Trend
-        </div>
-        <div class="chart-subtitle">LAST 20 READINGS · BEATS PER MINUTE</div>
-        <div class="chart-container">
-          <canvas id="bpmChart"></canvas>
-        </div>
-      </div>
-
-      <div class="glass-card chart-card fade-up delay-7">
-        <div class="chart-title" style="color:var(--amber);">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 15s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
-          Stress Levels
-        </div>
-        <div class="chart-subtitle">LAST 20 READINGS · 0 = LOW &nbsp;|&nbsp; 1 = HIGH</div>
-        <div class="chart-container">
-          <canvas id="stressChart"></canvas>
-        </div>
-      </div>
-
-    </div>
-  </main>
-
-  <footer class="footer">
-    Maternal Health Monitoring System &nbsp;·&nbsp; IIT BHU Varanasi &nbsp;·&nbsp; © 2025 Mohan Krishna &nbsp;·&nbsp; All data is for clinical observation only
-  </footer>
+<p>Prediction: <span id="pred">{{ prediction }}</span></p>
 
 </div>
 
+<!-- CHARTS -->
+<div class="card">
+<canvas id="tempChart"></canvas>
+<canvas id="bpmChart"></canvas>
+<canvas id="spo2Chart"></canvas>
+<canvas id="kicksChart"></canvas>
+</div>
+
 <script>
-  const API_URL   = 'https://maternal-health-monitor.onrender.com/live';
-  const MAX_PTS   = 20;
-  const INTERVAL  = 2000;
 
-  let tempData   = [];
-  let bpmData    = [];
-  let stressData = [];
-  let labels     = [];
-  let tick       = 0;
-  let firstLoad  = true;
+const API = "/live";
 
-  const overlay     = document.getElementById('errorOverlay');
-  const errorMsg    = document.getElementById('errorMsg');
-  const timestamp   = document.getElementById('timestamp');
-  const tempVal     = document.getElementById('tempVal');
-  const bpmVal      = document.getElementById('bpmVal');
-  const stressVal   = document.getElementById('stressVal');
-  const predVal     = document.getElementById('predVal');
-  const tempBadge   = document.getElementById('tempBadge');
-  const bpmBadge    = document.getElementById('bpmBadge');
-  const stressBadge = document.getElementById('stressBadge');
-  const predBadge   = document.getElementById('predBadge');
+let tempArr = [], bpmArr = [], spo2Arr = [], kicksArr = [], labels=[];
 
-  const form        = document.getElementById('predictionForm');
-  const weightInput  = document.getElementById('weightInput');
-  const heightInput  = document.getElementById('heightInput');
-  const bmiInput     = document.getElementById('bmiInput');
-  const bmiPreview   = document.getElementById('bmiPreview');
+function calcBMI(){
+let w = parseFloat(document.getElementById("weight").value);
+let h = parseFloat(document.getElementById("height").value);
 
-  Chart.defaults.color = '#5e7ea8';
-  Chart.defaults.font.family = "'JetBrains Mono', monospace";
-  Chart.defaults.font.size   = 10;
+if(w && h){
+let bmi = w / ((h/100)*(h/100));
+document.getElementById("bmi").value = bmi;
+document.getElementById("bmiVal").innerText = bmi.toFixed(2);
+}
+}
 
-  const sharedOptions = (color) => ({
-    responsive: true,
-    maintainAspectRatio: false,
-    animation: { duration: 400, easing: 'easeOutQuart' },
-    plugins: {
-      legend: { display: false },
-      tooltip: {
-        backgroundColor: 'rgba(9,15,31,0.92)',
-        borderColor: color,
-        borderWidth: 1,
-        padding: 10,
-        titleColor: color,
-        bodyColor: '#e8f4ff',
-        callbacks: { title: () => '' }
-      }
-    },
-    scales: {
-      x: {
-        grid: { color: 'rgba(56,217,245,0.05)', drawBorder: false },
-        ticks: { maxTicksLimit: 6, color: '#3a5272' }
-      },
-      y: {
-        grid: { color: 'rgba(56,217,245,0.05)', drawBorder: false },
-        ticks: { color: '#3a5272', maxTicksLimit: 5 }
-      }
-    }
-  });
+document.getElementById("weight").oninput = calcBMI;
+document.getElementById("height").oninput = calcBMI;
 
-  const tempCtx   = document.getElementById('tempChart').getContext('2d');
-  const tempGrad  = tempCtx.createLinearGradient(0, 0, 0, 180);
-  tempGrad.addColorStop(0, 'rgba(56,217,245,0.28)');
-  tempGrad.addColorStop(1, 'rgba(56,217,245,0.01)');
+function push(arr,val){
+arr.push(val);
+if(arr.length>20) arr.shift();
+}
 
-  const tempChart = new Chart(tempCtx, {
-    type: 'line',
-    data: {
-      labels: [],
-      datasets: [{
-        data: [],
-        borderColor: '#38d9f5',
-        backgroundColor: tempGrad,
-        borderWidth: 2,
-        pointRadius: 3,
-        pointBackgroundColor: '#38d9f5',
-        pointBorderColor: 'transparent',
-        tension: 0.4,
-        fill: true
-      }]
-    },
-    options: {
-      ...sharedOptions('#38d9f5'),
-      scales: {
-        ...sharedOptions('#38d9f5').scales,
-        y: { ...sharedOptions('#38d9f5').scales.y, min: 34, max: 40 }
-      }
-    }
-  });
+const tempChart = new Chart(document.getElementById("tempChart"), {
+type:'line',
+data:{labels:[],datasets:[{data:[],borderColor:'cyan'}]}
+});
 
-  const bpmCtx   = document.getElementById('bpmChart').getContext('2d');
-  const bpmGrad  = bpmCtx.createLinearGradient(0, 0, 0, 180);
-  bpmGrad.addColorStop(0, 'rgba(255,78,122,0.28)');
-  bpmGrad.addColorStop(1, 'rgba(255,78,122,0.01)');
+const bpmChart = new Chart(document.getElementById("bpmChart"), {
+type:'line',
+data:{labels:[],datasets:[{data:[],borderColor:'red'}]}
+});
 
-  const bpmChart = new Chart(bpmCtx, {
-    type: 'line',
-    data: {
-      labels: [],
-      datasets: [{
-        data: [],
-        borderColor: '#ff4e7a',
-        backgroundColor: bpmGrad,
-        borderWidth: 2,
-        pointRadius: 3,
-        pointBackgroundColor: '#ff4e7a',
-        pointBorderColor: 'transparent',
-        tension: 0.4,
-        fill: true
-      }]
-    },
-    options: {
-      ...sharedOptions('#ff4e7a'),
-      scales: {
-        ...sharedOptions('#ff4e7a').scales,
-        y: { ...sharedOptions('#ff4e7a').scales.y, min: 40, max: 160 }
-      }
-    }
-  });
+const spo2Chart = new Chart(document.getElementById("spo2Chart"), {
+type:'line',
+data:{labels:[],datasets:[{data:[],borderColor:'green'}]}
+});
 
-  const stressCtx = document.getElementById('stressChart').getContext('2d');
-  const stressChart = new Chart(stressCtx, {
-    type: 'bar',
-    data: {
-      labels: [],
-      datasets: [{
-        data: [],
-        backgroundColor: (ctx) => {
-          const v = ctx.dataset.data[ctx.dataIndex];
-          return v === 1 ? 'rgba(255,78,122,0.65)' : 'rgba(15,242,194,0.50)';
-        },
-        borderColor: (ctx) => {
-          const v = ctx.dataset.data[ctx.dataIndex];
-          return v === 1 ? '#ff4e7a' : '#0ff2c2';
-        },
-        borderWidth: 1,
-        borderRadius: 4
-      }]
-    },
-    options: {
-      ...sharedOptions('#ffa94d'),
-      scales: {
-        ...sharedOptions('#ffa94d').scales,
-        y: { ...sharedOptions('#ffa94d').scales.y, min: 0, max: 1.2, ticks: { stepSize: 1, color: '#3a5272' } }
-      }
-    }
-  });
+const kicksChart = new Chart(document.getElementById("kicksChart"), {
+type:'bar',
+data:{labels:[],datasets:[{data:[],backgroundColor:'orange'}]}
+});
 
-  function pushData(arr, val) {
-    arr.push(val);
-    if (arr.length > MAX_PTS) arr.shift();
-    return arr;
-  }
+async function update(){
 
-  function flashEl(el) {
-    el.classList.remove('updated');
-    void el.offsetWidth;
-    el.classList.add('updated');
-  }
+let res = await fetch(API);
+let data = await res.json();
 
-  function now() {
-    return new Date().toLocaleTimeString('en-IN', { hour12: false });
-  }
+document.getElementById("temp").innerText = data.temp;
+document.getElementById("bpm").innerText = data.bpm;
+document.getElementById("stress").innerText = data.stress;
+document.getElementById("spo2").innerText = data.spo2;
+document.getElementById("kicks").innerText = data.kicks;
 
-  function tempStatus(t) {
-    if (t < 36.0) return ['badge-warn', '▼ Below Normal'];
-    if (t > 37.5) return ['badge-alert', '▲ Fever Alert'];
-    return ['badge-normal', '✔ Normal Range'];
-  }
+document.getElementById("pred").innerText = data.prediction;
 
-  function bpmStatus(b) {
-    if (b < 60)  return ['badge-warn', '▼ Bradycardia'];
-    if (b > 100) return ['badge-alert', '▲ Tachycardia'];
-    return ['badge-normal', '✔ Normal Range'];
-  }
+let t = new Date().toLocaleTimeString();
 
-  function predStatus(p) {
-    const lower = (p || '').toLowerCase();
-    if (lower.includes('high')) return 'badge-alert';
-    if (lower.includes('low')) return 'badge-normal';
-    if (lower.includes('moderate')) return 'badge-warn';
-    return 'badge-neutral';
-  }
+push(labels,t);
+push(tempArr,data.temp);
+push(bpmArr,data.bpm);
+push(spo2Arr,data.spo2);
+push(kicksArr,data.kicks);
 
-  function isFiniteNumber(v) {
-    return Number.isFinite(Number(v));
-  }
+tempChart.data.labels = labels;
+tempChart.data.datasets[0].data = tempArr;
+tempChart.update();
 
-  function setMetricText(el, value, unit, fallback = '—') {
-    if (isFiniteNumber(value)) {
-      el.innerHTML = `${Number(value).toFixed(unit === '°C' ? 1 : 0)}<span class="metric-unit">${unit}</span>`;
-      return true;
-    } else {
-      el.innerHTML = `${fallback}<span class="metric-unit">${unit}</span>`;
-      return false;
-    }
-  }
+bpmChart.data.labels = labels;
+bpmChart.data.datasets[0].data = bpmArr;
+bpmChart.update();
 
-  function updateUI(data) {
-    const tempNum = Number(data.temp);
-    const bpmNum = Number(data.bpm);
-    const stressNum = Number(data.stress);
-    const predText = data.prediction || data.prediction_class || 'Unknown';
-    const ts = now();
+spo2Chart.data.labels = labels;
+spo2Chart.data.datasets[0].data = spo2Arr;
+spo2Chart.update();
 
-    timestamp.textContent = 'Last updated: ' + ts;
+kicksChart.data.labels = labels;
+kicksChart.data.datasets[0].data = kicksArr;
+kicksChart.update();
 
-    tick++;
-    const lbl = tick.toString();
-    pushData(labels, lbl);
+}
 
-    const hasTemp = Number.isFinite(tempNum);
-    const hasBpm = Number.isFinite(bpmNum);
-    const hasStress = Number.isFinite(stressNum);
+setInterval(update,2000);
 
-    if (hasTemp) {
-      tempVal.innerHTML = `${tempNum.toFixed(1)}<span class="metric-unit">°C</span>`;
-      flashEl(tempVal);
-      const [tClass, tTxt] = tempStatus(tempNum);
-      tempBadge.className = 'metric-badge ' + tClass;
-      tempBadge.textContent = '● ' + tTxt;
-      pushData(tempData, tempNum);
-      tempChart.data.labels = [...labels];
-      tempChart.data.datasets[0].data = [...tempData];
-      tempChart.update();
-    } else {
-      tempVal.innerHTML = `—<span class="metric-unit">°C</span>`;
-      tempBadge.className = 'metric-badge badge-neutral';
-      tempBadge.textContent = '● Waiting...';
-    }
-
-    if (hasBpm) {
-      bpmVal.innerHTML = `${bpmNum.toFixed(0)}<span class="metric-unit">BPM</span>`;
-      flashEl(bpmVal);
-      const [bClass, bTxt] = bpmStatus(bpmNum);
-      bpmBadge.className = 'metric-badge ' + bClass;
-      bpmBadge.textContent = '● ' + bTxt;
-      pushData(bpmData, bpmNum);
-      bpmChart.data.labels = [...labels];
-      bpmChart.data.datasets[0].data = [...bpmData];
-      bpmChart.update();
-    } else {
-      bpmVal.innerHTML = `—<span class="metric-unit">BPM</span>`;
-      bpmBadge.className = 'metric-badge badge-neutral';
-      bpmBadge.textContent = '● Waiting...';
-    }
-
-    if (hasStress) {
-      const stressStr = stressNum === 1 ? 'HIGH' : 'LOW';
-      const stressColor = stressNum === 1 ? 'var(--rose)' : 'var(--teal)';
-      stressVal.textContent = stressStr;
-      stressVal.style.color = stressColor;
-      flashEl(stressVal);
-      stressBadge.className = 'metric-badge ' + (stressNum === 1 ? 'badge-alert' : 'badge-normal');
-      stressBadge.textContent = stressNum === 1 ? '▲ Elevated Stress' : '✔ Calm';
-      pushData(stressData, stressNum);
-      stressChart.data.labels = [...labels];
-      stressChart.data.datasets[0].data = [...stressData];
-      stressChart.update();
-    } else {
-      stressVal.textContent = '—';
-      stressBadge.className = 'metric-badge badge-neutral';
-      stressBadge.textContent = '● Waiting...';
-    }
-
-    predVal.textContent = predText;
-    flashEl(predVal);
-    predBadge.className = 'metric-badge ' + predStatus(predText);
-    predBadge.textContent = '● AI Assessment';
-
-    if (firstLoad && (hasTemp || hasBpm || hasStress)) {
-      firstLoad = false;
-      overlay.classList.add('hidden');
-    }
-  }
-
-  async function fetchData() {
-    try {
-      const res = await fetch(API_URL, { cache: 'no-store' });
-      if (!res.ok) throw new Error('HTTP ' + res.status);
-      const data = await res.json();
-      updateUI(data);
-    } catch (err) {
-      if (firstLoad) {
-        errorMsg.textContent = 'Retrying… (' + err.message + ')';
-      } else {
-        timestamp.textContent = 'Connection lost — retrying… ' + now();
-      }
-    }
-  }
-
-  function calculateBMI() {
-    const weight = parseFloat(weightInput.value);
-    const heightCm = parseFloat(heightInput.value);
-
-    if (!weight || !heightCm || heightCm <= 0) {
-      bmiInput.value = '';
-      bmiPreview.textContent = '—';
-      return;
-    }
-
-    const heightM = heightCm / 100;
-    const bmi = weight / (heightM * heightM);
-    bmiInput.value = bmi.toFixed(2);
-    bmiPreview.textContent = bmi.toFixed(2);
-  }
-
-  weightInput.addEventListener('input', calculateBMI);
-  heightInput.addEventListener('input', calculateBMI);
-
-  form.addEventListener('submit', function () {
-    calculateBMI();
-  });
-
-  calculateBMI();
-  fetchData();
-  setInterval(fetchData, INTERVAL);
 </script>
+
 </body>
 </html>
